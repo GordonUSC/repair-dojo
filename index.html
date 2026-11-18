@@ -272,11 +272,16 @@ h1.logo .l2{color:#ffd75e;animation-delay:.14s;text-shadow:0 3px 0 #b9763a,0 6px
 #banner b{font-size:26px;letter-spacing:0}
 #banner span{font-size:14px;color:#fff6e2}
 @media (max-height:620px){#team{grid-template-columns:1fr 1fr}.demo{height:70px}.demo img{height:58px}#ladder img{height:30px}h1.logo{font-size:52px}}
+#rot{display:none;position:fixed;inset:0;z-index:99;background:#120d24;color:#fff6e2;place-items:center;text-align:center;padding:20px}
+#rot b{display:block;font:700 22px "Pix",var(--mono);color:#ffd75e;margin:10px 0 6px;text-transform:uppercase}
+#rot span{font:800 15px var(--mono)}
+@media (orientation:landscape) and (max-height:500px){#rot{display:grid}}
 @media (prefers-reduced-motion:reduce){#ovTitle .art,#ovTitle .glow,.em,h1.logo span,.demo i,.demo .tl,.d3 .pf,#app.quake,.ov.show>.card,#beltBig{animation:none}}
 </style>
 </head>
 <body>
 <noscript><div style="padding:32px 20px;max-width:520px;margin:0 auto;font:16px/1.5 ui-monospace,Menlo,monospace;color:#fff6e2"><h1 style="font-size:28px;margin:0 0 12px">Repair Dojo</h1><p>Scan the robot, pick the right tool, and tap when the rings meet. Six robots, one rival, and a team at the end.</p><p>This game needs JavaScript. Turn it on and reload to play.</p></div></noscript>
+<div id="rot" role="status"><div><div class="em"></div><b>Turn your phone upright</b><span>The dojo is built for portrait.</span></div></div>
 <div id="app">
   <div id="hud">
     <div id="belt" class="pill"><i id="beltSwatch"></i><span id="beltName">WHITE</span></div>
