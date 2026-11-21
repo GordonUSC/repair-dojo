@@ -15,17 +15,33 @@
       #dojo-bar { width: min(60vw, 320px); height: 10px; border-radius: 6px; background: rgba(255,255,255,.14); overflow: hidden; }
       #dojo-fill { width: 0%; height: 100%; background: #ffd75e; border-radius: 6px; transition: width .2s ease-out; }
       #dojo-err { display: none; max-width: 80vw; color: #ffb0a0; font-size: 15px; text-align: center; }
+      #dojo-fallback { display: none; pointer-events: auto; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: 8px; background: #ffd75e; color: #120d24; text-align: center; text-decoration: none; }
+      #dojo-fallback:focus-visible { outline: 3px solid #fff6e2; outline-offset: 4px; }
+      #dojo-load.failed #dojo-fallback { display: inline-flex; }
+      #dojo-load.failed #dojo-bar, #dojo-load.failed #dojo-msg { display: none; }
     </style>
   </head>
   <body>
     <canvas id="unity-canvas" tabindex="-1"></canvas>
-    <div id="dojo-load"><div class="t">REPAIR DOJO</div><div id="dojo-bar"><div id="dojo-fill"></div></div><div id="dojo-msg">Loading the dojo...</div><div id="dojo-err"></div></div>
+    <div id="dojo-load"><div class="t">REPAIR DOJO</div><div id="dojo-bar"><div id="dojo-fill"></div></div><div id="dojo-msg">Loading the dojo...</div><div id="dojo-err" role="alert"></div><a id="dojo-fallback" href="../">Play the browser edition</a></div>
     <script src="Build/WebGL.loader.js"></script>
     <script>
       var canvas = document.querySelector("#unity-canvas");
       // keep the page from scrolling or zooming under the game on phones
       ["touchmove", "gesturestart", "dblclick"].forEach(function (n) { document.addEventListener(n, function (e) { e.preventDefault(); }, { passive: false }); });
       window.dojoErrors = [];
+      function showLaunchFailure(msg) {
+        window.dojoErrors.push(String(msg));
+        document.getElementById("dojo-load").classList.add("failed");
+        var e = document.getElementById("dojo-err");
+        e.style.display = "block";
+        e.textContent = /WebGL/i.test(String(msg))
+          ? "The Unity edition couldn’t start with your browser’s graphics settings."
+          : "The Unity edition couldn’t load.";
+      }
+      if (typeof createUnityInstance !== "function") {
+        showLaunchFailure("Unity loader unavailable");
+      } else {
       createUnityInstance(canvas, {
         arguments: [],
         dataUrl: "Build/WebGL.data.unityweb",
@@ -39,7 +55,8 @@
         showBanner: function (msg, type) { if (type === "error") { window.dojoErrors.push(msg); } console.warn("unity:", type, msg); },
       }, function (p) { document.getElementById("dojo-fill").style.width = Math.round(p * 100) + "%"; })
       .then(function (inst) { window.unityInstance = inst; document.getElementById("dojo-load").style.display = "none"; canvas.focus(); })
-      .catch(function (msg) { window.dojoErrors.push(String(msg)); var e = document.getElementById("dojo-err"); e.style.display = "block"; e.textContent = "The dojo could not load: " + msg; document.getElementById("dojo-msg").style.display = "none"; });
+      .catch(showLaunchFailure);
+      }
     </script>
   </body>
 </html>
