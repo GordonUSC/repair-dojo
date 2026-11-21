@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#120d24">
+    <title>Repair Dojo</title>
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #120d24; }
+      body { position: fixed; inset: 0; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+      #unity-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; background: #120d24; outline: none; touch-action: none; }
+      #dojo-load { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; color: #fff6e2; font: 600 18px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .04em; pointer-events: none; }
+      #dojo-load .t { font-size: 28px; font-weight: 800; color: #ffd75e; }
+      #dojo-bar { width: min(60vw, 320px); height: 10px; border-radius: 6px; background: rgba(255,255,255,.14); overflow: hidden; }
+      #dojo-fill { width: 0%; height: 100%; background: #ffd75e; border-radius: 6px; transition: width .2s ease-out; }
+      #dojo-err { display: none; max-width: 80vw; color: #ffb0a0; font-size: 15px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <div id="dojo-load"><div class="t">REPAIR DOJO</div><div id="dojo-bar"><div id="dojo-fill"></div></div><div id="dojo-msg">Loading the dojo...</div><div id="dojo-err"></div></div>
+    <script src="Build/WebGL.loader.js"></script>
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+      // keep the page from scrolling or zooming under the game on phones
+      ["touchmove", "gesturestart", "dblclick"].forEach(function (n) { document.addEventListener(n, function (e) { e.preventDefault(); }, { passive: false }); });
+      window.dojoErrors = [];
+      createUnityInstance(canvas, {
+        arguments: [],
+        dataUrl: "Build/WebGL.data.unityweb",
+        frameworkUrl: "Build/WebGL.framework.js.unityweb",
+        codeUrl: "Build/WebGL.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Darby",
+        productName: "Repair Dojo",
+        productVersion: "1.0",
+        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+        showBanner: function (msg, type) { if (type === "error") { window.dojoErrors.push(msg); } console.warn("unity:", type, msg); },
+      }, function (p) { document.getElementById("dojo-fill").style.width = Math.round(p * 100) + "%"; })
+      .then(function (inst) { window.unityInstance = inst; document.getElementById("dojo-load").style.display = "none"; canvas.focus(); })
+      .catch(function (msg) { window.dojoErrors.push(String(msg)); var e = document.getElementById("dojo-err"); e.style.display = "block"; e.textContent = "The dojo could not load: " + msg; document.getElementById("dojo-msg").style.display = "none"; });
+    </script>
+  </body>
+</html>
